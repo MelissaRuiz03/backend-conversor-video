@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const { spawn, execFile } = require('child_process');
 const ffmpegPath = require('ffmpeg-static');
 const ffmpeg = require('fluent-ffmpeg');
@@ -11,6 +12,8 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const YTDLP_PATH = path.join(__dirname, 'bin', 'yt-dlp');
+const COOKIES_PATH = process.env.YTDLP_COOKIES_PATH || path.join(__dirname, 'cookies.txt');
+const cookiesArgs = fs.existsSync(COOKIES_PATH) ? ['--cookies', COOKIES_PATH] : [];
 
 const YOUTUBE_URL_REGEX = /^https?:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)/;
 
@@ -27,7 +30,7 @@ function getVideoInfo(url) {
   return new Promise((resolve, reject) => {
     execFile(
       YTDLP_PATH,
-      ['--dump-json', '--no-playlist', '--no-warnings', url],
+      ['--dump-json', '--no-playlist', '--no-warnings', ...cookiesArgs, url],
       { maxBuffer: 10 * 1024 * 1024 },
       (err, stdout) => {
         if (err) return reject(err);
@@ -75,6 +78,7 @@ app.post('/convert', async (req, res) => {
       '-f', 'bestaudio',
       '--no-playlist',
       '--no-warnings',
+      ...cookiesArgs,
       '-o', '-',
       url,
     ]);
