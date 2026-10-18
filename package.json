@@ -1,0 +1,18 @@
+{
+  "name": "yt-to-mp3",
+  "version": "1.0.0",
+  "description": "Conversor pessoal de video (YouTube) para MP3 usando Express + ffmpeg",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "postinstall": "node scripts/ensure-ytdlp.js",
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.19.2",
+    "ffmpeg-static": "^5.2.0",
+    "fluent-ffmpeg": "^2.1.3"
+  }
+}
